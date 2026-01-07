@@ -1,2 +1,0 @@
-# MINDherd
-Dynamiques sociales équines 
