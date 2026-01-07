@@ -95,9 +95,9 @@ const baseSituations = [
             {
                 text: "Intervenir avec autorité",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -20, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -15, cohesion: -10 },
-                    white_horse: { Autorité: -15, confiance: -10, hierarchie:- 15, cohesion: -10 }
+                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -25, cohesion: -15 },
+                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -20, cohesion: -20 },
+                    white_horse: { Autorité: -15, confiance: -15, hierarchie:- 20, cohesion: -15 }
                 }
             },
             {
@@ -127,9 +127,9 @@ const baseSituations = [
             {
                 text: "Rechercher un compromis",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -15, hierarchie: -5, cohesion: -10 },
-                    brown_horse: { Autorité: -15, confiance: -10, hierarchie: -5, cohesion: -10 },
-                    white_horse: { Autorité: -15, confiance: -10, hierarchie: -5, cohesion: -10 }
+                    black_horse: { Autorité: -20, confiance: -25, hierarchie: -5, cohesion: -20 },
+                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -5, cohesion: -15 },
+                    white_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -15 }
                 }
             }
         ]
@@ -143,9 +143,9 @@ const baseSituations = [
             {
                 text: "Soutenir le chef actuel",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -5, hierarchie: -15, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -10 },
-                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -10 }
+                    black_horse: { Autorité: -15, confiance: -5, hierarchie: -15, cohesion: -15 },
+                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 }
                 }
             },
             {
@@ -177,8 +177,8 @@ const baseSituations = [
                 text: "Rester calme et observer",
                 effects: {
                     black_horse: { Autorité: -20, confiance: -20, hierarchie: -15, cohesion: -20 },
-                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: -20, hierarchie: -10, cohesion: -10 }
+                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -20 },
+                    white_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -20 }
                 }
             }
         ]
@@ -200,7 +200,7 @@ const baseSituations = [
             {
                 text: "Attendre pour voir l'évolution",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -10, cohesion: -20 },
+                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -10, cohesion: -20 },
                     brown_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -15 },
                     white_horse: { Autorité: -10, confiance: -20, hierarchie: 0, cohesion: -15 }
                 }
@@ -224,9 +224,9 @@ const baseSituations = [
             {
                 text: "Chercher un point d'eau",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -10, cohesion: -20 },
-                    brown_horse: { Autorité: -15, confiance: -5, hierarchie: -5, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: 0, hierarchie: -5, cohesion: -10 }
+                    black_horse: { Autorité: -10, confiance: -10, hierarchie: -10, cohesion: -10 },
+                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -5, cohesion: -10 }
                 }
             }
         ]
@@ -1386,7 +1386,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
         // Créer les boutons de choix
         box.choices.forEach((choice, index) => {
             const button = add([
-                rect(400, 50),
+                rect(450, 50),
                 pos(width()/2 + 150, height()/2 + (index * 70)),
                 anchor("center"),
                 color(50, 50, 50),
