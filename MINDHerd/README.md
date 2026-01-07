@@ -9,7 +9,7 @@
 
 Dans MINDHerd, vous incarnez un cheval au sein d’un troupeau sauvage évoluant dans un monde où chaque action, chaque choix, influence la cohésion, la survie et l’équilibre du troupeau. Vous serez confronté·e à des dilemmes. 
 
-> * Fuir ou protéger ? Suivre ou guider ? Isoler ou rassembler ? Chacun de vos choix façonnera le destin du troupeau. *
+Fuir ou protéger ? Suivre ou guider ? Isoler ou rassembler ? Chacun de vos choix façonnera le destin du troupeau...
 
 **Vos objectifs :**
 
@@ -23,10 +23,13 @@ Dans MINDHerd, vous incarnez un cheval au sein d’un troupeau sauvage évoluant
 
 Le jeu s'articule autour de la gestion de quatre jauges vitales. Si l'une d'entre elles tombe à **zéro**, le troupeau se disperse et la partie est perdue (Game Over).
 
- **Autorité :** La capacité à imposer des décisions cruciales en situation de crise. Une autorité trop faible mène au chaos, trop forte à la tyrannie.<br>
- **Confiance :** Le sentiment de sécurité des individus. Sans confiance, le stress augmente et les réactions deviennent imprévisibles.<br>
- **Cohésion :** La force du lien social. C'est ce qui empêche le groupe d'éclater lors des migrations ou des attaques.<br>
- **Hiérarchie :** Le respect de l'ordre social établi, essentiel pour éviter les conflits internes permanents.<br>
+ * **Autorité :** La capacité à imposer des décisions cruciales en situation de crise. Une autorité trop faible mène au chaos, trop forte à la tyrannie.<br>
+
+ * **Confiance :** Le sentiment de sécurité des individus. Sans confiance, le stress augmente et les réactions deviennent imprévisibles.<br>
+
+ * **Cohésion :** La force du lien social. C'est ce qui empêche le groupe d'éclater lors des migrations ou des attaques.<br> 
+
+ * **Hiérarchie :** Le respect de l'ordre social établi, essentiel pour éviter les conflits internes permanents.<br>
 
 
 
@@ -46,7 +49,7 @@ Le joueur peut choisir son avatar, influençant le style de jeu :
 
 1. Clonez ce dépôt :
 ```bash
-git https://github.com/SIla25T/MINDherd.git
+git clone  https://github.com/SIla25T/MINDherd.git
 ```
 
 
@@ -54,8 +57,6 @@ git https://github.com/SIla25T/MINDherd.git
 ## Dépendances et technologies utilisées
 
 
-
-### Cœur du projet
 
 * **[Kaplay.js](https://kaplayjs.com/) (v3001) :** Une bibliothèque JavaScript performante et intuitive pour la création de jeux 2D. Elle gère ici le rendu graphique, la physique des sprites, la gestion des scènes et le système audio.
 * **HTML5 / CSS :** Pour la structure et le style de la page hôte.
@@ -73,7 +74,7 @@ git https://github.com/SIla25T/MINDherd.git
 
 ## Sources et Crédits
 
-Ce projet respecte les droits d'auteur et s'appuie sur une littérature scientifique rigoureuse.
+Ce projet respecte les droits d'auteur et s'appuie sur une littérature scientifique. 
 
 ### Documentation Éthologique
 

@@ -596,7 +596,7 @@ const baseSituations = [
         ]
     }
 ];
-   // Fonction pour mélanger efficacement un tableau (Algorithme de Fisher-Yates)
+   // Fonction pour mélanger (Algorithme de Fisher-Yates)
    function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1107,7 +1107,7 @@ scene("game", () => {
                 const currentWidth = statsBars[stat].bar.width;
                 const targetWidth = statsBars[stat].targetWidth || 200;
                 
-                // Animation fluide de la jauge
+                // Animation de la jauge
                 if (Math.abs(currentWidth - targetWidth) > 0.5) {
                     const speed = 0.2; 
                     const diff = targetWidth - currentWidth;
@@ -1149,7 +1149,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
         rect(900, 600),
         pos(width()/2 + 150, height()/2),
         anchor("center"),
-        color(0, 0, 0, 0.85), // Un peu plus sombre pour la fin
+        color(0, 0, 0, 0.85), 
         fixed(),
         z(100),
         "boxElement"
@@ -1161,7 +1161,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
     // Si c'est un Game Over (une jauge à 0)
     if (isGameOver) {
         titleText = "TROUPEAU DISPERSÉ";
-        colorTitle = rgb(255, 50, 50); // Rouge
+        colorTitle = rgb(255, 50, 50); 
     }
 
     add([
@@ -1174,9 +1174,9 @@ function showFinalScreen(isGameOver = false, cause = "") {
         "boxElement"
     ]);
 
-    // Logique du message
+    // Message selon victoire ou défaite
     if (isGameOver) {
-        // --- CAS DÉFAITE ---
+        // Message défaite
         add([
             text(`Le niveau de ${cause} est tombé à zéro.`, { size: 32, font: "Times New Roman" }),
             pos(width()/2 + 150, height()/2 - 50),
@@ -1196,7 +1196,6 @@ function showFinalScreen(isGameOver = false, cause = "") {
             z(101),
             "boxElement"
         ]);
-        
 
     } else {
         // Calcul de la moyenne
@@ -1339,7 +1338,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
                 break;
         }
         
-        // Le fond de la box
+        // Fond de la box
         const boxBg = add([
             sprite("background"),
             scale(1, 1),
@@ -1418,7 +1417,6 @@ function showFinalScreen(isGameOver = false, cause = "") {
                 button.color = rgb(50, 50, 50); 
                 setCursor("default");
             });
-            // DANS LA FONCTION showBox, REMPLACER LE button.onClick PAR CECI :
 
             button.onClick(() => {
                 playGameSound("click", { volume: 0.3 });
@@ -1429,28 +1427,26 @@ function showFinalScreen(isGameOver = false, cause = "") {
                 let gameOver = false;
                 let failureReason = "";
 
-                // Appliquer les effets immédiatement (sans attendre et sans afficher de texte)
+                // Appliquer les effets des choix
                 Object.entries(effects).forEach(([stat, value]) => {
-                    // Appliquer le changement
                     gameState.stats[stat] = gameState.stats[stat] + value;
                     
-                    // Vérifier si la jauge est vide (Game Over)
+                    // Vérifier si la jauge est vide 
                     if (gameState.stats[stat] <= 0) {
-                        gameState.stats[stat] = 0; // On force à 0 visuellement
+                        gameState.stats[stat] = 0; 
                         gameOver = true;
-                        failureReason = stat; // On note quelle stat a causé la fin
+                        failureReason = stat; 
                     }
-                    
+    
                     // Bloquer le maximum à 100
                     if (gameState.stats[stat] > 100) {
                         gameState.stats[stat] = 100;
                     }
 
-                    // Garder les flèches si vous voulez, ou supprimer cette ligne pour ne rien avoir du tout
                     showStatChange(stat, value); 
                 });
                 
-                updateStats(); // Mettre à jour visuellement les barres
+                updateStats(); 
 
                 // Nettoyer l'interface de la question
                 get("boxElement").forEach(element => {
@@ -1458,7 +1454,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
                 });
                 gameState.currentBox = null;
 
-                // --- VÉRIFICATION GAME OVER ---
+                // Vérifier si le jeu est terminé
                 if (gameOver) {
                     // Si une jauge est à 0, on va direct à l'écran final après une courte pause
                     wait(1, () => {
