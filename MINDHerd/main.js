@@ -47,6 +47,7 @@ let gameState = {
         cohesion: 100,   
         hierarchie: 100    
     },
+    currentSituationSound: null,
     currentBox: null,  
     boxChoices: [],      
     usedBoxes: new Set(), 
@@ -61,10 +62,9 @@ let globalUsedSituations = new Set();
 
 // Fonction pour jouer un son 
 function playGameSound(name, options = {}) {
-    if (!gameState.soundEnabled) return;
+    if (!gameState.soundEnabled) return null;
     
     try {
-        // Arrêter la musique de fond si on joue un autre son
         if (name !== "background_music" && gameState.musicPlaying) {
             try {
                 stop("background_music");
@@ -73,13 +73,13 @@ function playGameSound(name, options = {}) {
                 console.warn("Impossible d'arrêter la musique de fond:", error.message);
             }
         }
-        
-        play(name, {
+        return play(name, {
             volume: options.volume || 0.5,
             loop: options.loop || false
         });
     } catch (error) {
         console.warn(`Impossible de jouer le son ${name}: ${error.message}`);
+        return null;
     }
 }
 
@@ -95,7 +95,7 @@ const baseSituations = [
             {
                 text: "Intervenir avec autorité",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -25, cohesion: -15 },
+                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -25, cohesion: -15 },
                     brown_horse: { Autorité: -10, confiance: -15, hierarchie: -20, cohesion: -20 },
                     white_horse: { Autorité: -15, confiance: -15, hierarchie:- 20, cohesion: -15 }
                 }
@@ -127,9 +127,9 @@ const baseSituations = [
             {
                 text: "Rechercher un compromis",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -25, hierarchie: -5, cohesion: -20 },
-                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -5, cohesion: -15 },
-                    white_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -15 }
+                    black_horse: { Autorité: -25, confiance: -25, hierarchie: -5, cohesion: -20 },
+                    brown_horse: { Autorité: -20, confiance: -20, hierarchie: -5, cohesion: -15 },
+                    white_horse: { Autorité: -20, confiance: -15, hierarchie: -5, cohesion: -15 }
                 }
             }
         ]
@@ -143,9 +143,9 @@ const baseSituations = [
             {
                 text: "Soutenir le chef actuel",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -5, hierarchie: -15, cohesion: -15 },
-                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 }
+                    black_horse: { Autorité: -25, confiance: -15, hierarchie: -15, cohesion: -15 },
+                    brown_horse: { Autorité: -15, confiance: -15, hierarchie: -15, cohesion: -20 },
+                    white_horse: { Autorité: -20, confiance: -15, hierarchie: -15, cohesion: -25 }
                 }
             },
             {
@@ -176,9 +176,9 @@ const baseSituations = [
             {
                 text: "Rester calme et observer",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -15, cohesion: -20 },
-                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -20 },
-                    white_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -20 }
+                    black_horse: { Autorité: -25, confiance: -25, hierarchie: -15, cohesion: -20 },
+                    brown_horse: { Autorité: -20, confiance: -25, hierarchie: -10, cohesion: -25 },
+                    white_horse: { Autorité: -25, confiance: -20, hierarchie: -10, cohesion: -25 }
                 }
             }
         ]
@@ -200,9 +200,9 @@ const baseSituations = [
             {
                 text: "Attendre pour voir l'évolution",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -10, cohesion: -20 },
-                    brown_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: -20, hierarchie: 0, cohesion: -15 }
+                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -15, cohesion: -15 },
+                    brown_horse: { Autorité: -15, confiance: -15, hierarchie: -10, cohesion: -20 },
+                    white_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -15 }
                 }
             }
         ]
@@ -224,9 +224,9 @@ const baseSituations = [
             {
                 text: "Chercher un point d'eau",
                 effects: {
-                    black_horse: { Autorité: -10, confiance: -10, hierarchie: -10, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -5, cohesion: -10 }
+                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -20, cohesion: -20 },
+                    brown_horse: { Autorité: -15, confiance: -25, hierarchie: -15, cohesion: -25 },
+                    white_horse: { Autorité: -15, confiance: -25, hierarchie: -15, cohesion: -20 }
                 }
             }
         ]
@@ -241,9 +241,9 @@ const baseSituations = [
             {
                 text: "Accueillir chaleureusement",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -15, hierarchie: -15, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -10, hierarchie: -15, cohesion: -10 },
-                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -15, cohesion: -10 }
+                    black_horse: { Autorité: -20, confiance: -15, hierarchie: -15, cohesion: -15 },
+                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -15, cohesion: -20 },
+                    white_horse: { Autorité: -15, confiance: -15, hierarchie: -15, cohesion: -20 }
                 }
             },
             {
@@ -265,17 +265,17 @@ const baseSituations = [
             {
                 text: "Laisser les étalons régler la hiérarchie naturellement",
                 effects: {
-                    black_horse: { Autorité: 5, confiance: 0, hierarchie: -5, cohesion: -5 },
-                    brown_horse: { Autorité: 5, confiance: 0, hierarchie: -5, cohesion: -5 },
-                    white_horse: { Autorité: 5, confiance: 0, hierarchie: -5, cohesion: -5 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: -5, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: -5, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: -5, cohesion: 0 }
                 }
             },
             {
                 text: "Maintenir l'ordre",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -5, hierarchie: -20, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -10, cohesion: -15 },
-                    white_horse: { Autorité: -5, confiance: -5, hierarchie: -5, cohesion: -20 }
+                    black_horse: { Autorité: -25, confiance: -5, hierarchie: -20, cohesion: -20 },
+                    brown_horse: { Autorité: -20, confiance: -5, hierarchie: -15, cohesion: -25 },
+                    white_horse: { Autorité: -20, confiance: -5, hierarchie: -15, cohesion: -20 }
                 }
             }
         ]
@@ -289,17 +289,17 @@ const baseSituations = [
             {
                 text: "Protéger la mère et le poulain",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: 5, hierarchie: 0, cohesion: 10 },
-                    brown_horse: { Autorité: 0, confiance: 10, hierarchie: 0, cohesion: 15 },
-                    white_horse: { Autorité: 0, confiance: 10, hierarchie: 0, cohesion: 10 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             },
             {
                 text: "Continuer normalement",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -10, hierarchie: -20, cohesion: -10 },
-                    brown_horse: { Autorité: -15, confiance: -5, hierarchie: -15, cohesion: -5 },
-                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -10, cohesion: 0 }
+                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -10, cohesion: -20 },
+                    brown_horse: { Autorité: -15, confiance: -25, hierarchie: -10, cohesion: -25 },
+                    white_horse: { Autorité: -10, confiance: -20, hierarchie: -10, cohesion: -20 }
                 }
             }
         ]
@@ -314,17 +314,17 @@ const baseSituations = [
             {
                 text: "Partager équitablement",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -5, hierarchie: -20, cohesion: -20 },
-                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -20 },
-                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -20 }
+                    black_horse: { Autorité: -15, confiance: -5, hierarchie: -25, cohesion: -20 },
+                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -25 },
+                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -20, cohesion: -20 }
                 }
             },
             {
                 text: "Laisser la hiérarchie décider",
                 effects: {
-                    black_horse: { Autorité: 15, confiance: -5, hierarchie: 10, cohesion: 0 },
-                    brown_horse: { Autorité: 10, confiance: -5, hierarchie: 10, cohesion: 0 },
-                    white_horse: { Autorité: 10, confiance: -5, hierarchie: 10, cohesion: 0 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             }
         ]
@@ -338,9 +338,9 @@ const baseSituations = [
             {
                 text: "Limiter l'accès",
                 effects: {
-                    black_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -20 },
-                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -20 },
-                    white_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -20 }
+                    black_horse: { Autorité: -10, confiance: -15, hierarchie: -15, cohesion: -20 },
+                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -10, cohesion: -20 },
+                    white_horse: { Autorité: -10, confiance: -15, hierarchie: -10, cohesion: -20 }
                 }
             },
             {
@@ -357,14 +357,14 @@ const baseSituations = [
         id: "resource_shelter",
         title: "Abri limité",
         description: "Une tempête approche mais l'abri ne peut accueillir qu'une partie du troupeau.",
-        scientificInfo: "Le savais-tu ? les chevaux résistent de -40°C à +40°C. En tempête, ils font bloc dos au vent, même si l’accès aux meilleurs abris reste dicté par la hiérarchie.",
+        scientificInfo: "Le savais-tu ? les chevaux résistent de -40°C à +40°C. En tempête, ils font bloc, dos au vent, même si l’accès aux meilleurs abris reste dicté par la hiérarchie.",
         choices: [
             {
                 text: "Protéger les plus vulnérables",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -15, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -10, cohesion: -10 },
-                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -10, cohesion: -10 }
+                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -20, cohesion: -10 },
+                    brown_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -5, hierarchie: -15, cohesion: -15 }
                 }
             },
             {
@@ -395,9 +395,9 @@ const baseSituations = [
             {
                 text: "Continuer sans lui",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -5 },
-                    brown_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -5 },
-                    white_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -5 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             }
         ]
@@ -411,9 +411,9 @@ const baseSituations = [
             {
                 text: "Attendre qu'il guérisse",
                 effects: {
-                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -10, cohesion: -10 },
-                    brown_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -15 },
-                    white_horse: { Autorité: -10, confiance: -20, hierarchie: -10, cohesion: -10 }
+                    black_horse: { Autorité: -20, confiance: -20, hierarchie: -10, cohesion: -15 },
+                    brown_horse: { Autorité: -15, confiance: -25, hierarchie: -15, cohesion: -20 },
+                    white_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -15 }
                 }
             },
             {
@@ -435,17 +435,17 @@ const baseSituations = [
             {
                 text: "Adapter le rythme",
                 effects: {
-                    black_horse: { Autorité: -10, confiance: 0, hierarchie: -5, cohesion: -5 },
-                    brown_horse: { Autorité: -10, confiance: 0, hierarchie: -5, cohesion: -5 },
-                    white_horse: { Autorité: -10, confiance: 0, hierarchie: -5, cohesion: -5 }
+                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -5, cohesion: -10 },
+                    brown_horse: { Autorité: -10, confiance: -10, hierarchie: -5, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -5, cohesion: -10}
                 }
             },
             {
                 text: "Maintenir le rythme",
                 effects: {
                     black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    brown_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: 0 },
-                    white_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: 0 }
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             }
         ]
@@ -460,65 +460,65 @@ const baseSituations = [
             {
                 text: "Partir immédiatement",
                 effects: {
-                    black_horse: { Autorité: 20, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    brown_horse: { Autorité: 10, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    white_horse: { Autorité: 5, confiance: 0, hierarchie: 0, cohesion: 0 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             },
             {
                 text: "Attendre le printemps",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -15 },
-                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -10 },
-                    white_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -10 }
+                    black_horse: { Autorité: -15, confiance: -15, hierarchie: -5, cohesion: -20 },
+                    brown_horse: { Autorité: -10, confiance: -20, hierarchie: -5, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -15, hierarchie: -5, cohesion: -15 }
+                }
+            }
+        ]
+    },
+    {
+        id: "env_insects",
+        title: "Invasion d'insectes",
+        description: "Une nuée de taons et de mouches harcèle le troupeau, causant stress et agitation.",
+        scientificInfo: "Le savais-tu ? Pour se protéger, les chevaux se mettent souvent 'tête-bêche'. Ils utilisent ainsi leurs queues comme des chasse-mouches naturels pour protéger les yeux et les naseaux de leur partenaire.",
+        choices: [
+            {
+                text: "Se regrouper tête-bêche",
+                effects: {
+                    black_horse: { Autorité: -5, confiance: 0 , hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
+                }
+            },
+            {
+                text: "Galoper vers une zone ventée",
+                effects: {
+                    black_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -5 },
+                    brown_horse: { Autorité: 0, confiance: -10, hierarchie: 0, cohesion: -10 },
+                    white_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -5 }
                 }
             }
         ]
     },
     {
         id: "env_flood",
-        title: "Inondation",
-        description: "Une inondation menace de couper l'accès aux ressources.",
-        scientificInfo: "Le savais-tu ? Ils sont capables de nager sur de grandes distances. Une compétence de survie indispensable pour traverser des rivières ou fuir des zones inondées.",
+        title: "Montée des eaux", 
+        description: "L'eau monte dangereusement, isolant le troupeau sur une colline où l'herbe commence à manquer.",
+        scientificInfo: "Le savais-tu ? Les chevaux sont d'excellents nageurs naturels. Ils gonflent leurs poumons pour flotter et battent des jambes comme au trot. C'est une compétence de survie vitale pour migrer.",
         choices: [
             {
-                text: "traverser le fleuve à la nage",
+                text: "Traverser le courant à la nage",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
+                    black_horse: { Autorité: 15, confiance: -10, hierarchie: 5, cohesion: 10 }, 
+                    brown_horse: { Autorité: 5, confiance: -5, hierarchie: 0, cohesion: 15 }, 
+                    white_horse: { Autorité: 10, confiance: -10, hierarchie: 0, cohesion: 5 }   
                 }
             },
             {
-                text: "Rester sur les hauteurs",
+                text: "Rester sur les hauteurs et attendre",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
-                }
-            }
-        ]
-    },
-    {
-        id: "env_heat",
-        title: "Canicule",
-        description: "Une vague de chaleur exceptionnelle frappe la région.",
-        scientificInfo: "Le savais-tu ? Les chevaux sont sujets aux coups de chaleur (hyperthermie) qui peuvent rapidement devenir mortels si leur température corporelle interne dépasse un certain seuil, surtout en l'absence d'eau.",
-        choices: [
-            {
-                text: "Chercher l'ombre",
-                effects: {
-                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
-                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
-                }
-            },
-            {
-                text: "Continuer normalement",
-                effects: {
-                    black_horse: { Autorité: -15, confiance: -10, hierarchie: 0, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: 0, cohesion: -10 },
-                    white_horse: { Autorité: -10, confiance: -10, hierarchie: 0, cohesion: -10 }
+                    black_horse: { Autorité: -15, confiance: 10, hierarchie: -5, cohesion: -10 }, 
+                    brown_horse: { Autorité: -5, confiance: 15, hierarchie: 0, cohesion: -5 },    
+                    white_horse: { Autorité: -5, confiance: 10, hierarchie: 0, cohesion: -10 } 
                 }
             }
         ]
@@ -532,17 +532,17 @@ const baseSituations = [
             {
                 text: "Laisser le jeu se dérouler",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: 5, hierarchie: 0, cohesion: 10 },
-                    brown_horse: { Autorité: 0, confiance: 10, hierarchie: 0, cohesion: 10 },
-                    white_horse: { Autorité: 0, confiance: 5, hierarchie: 0, cohesion: 5 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 5 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 5 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 5 }
                 }
             },
             {
                 text: "Interrompre pour garder le calme",
                 effects: {
-                    black_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -10 },
-                    brown_horse: { Autorité: 0, confiance: -10, hierarchie: 0, cohesion: -15 },
-                    white_horse: { Autorité: 0, confiance: -5, hierarchie: 0, cohesion: -15 }
+                    black_horse: { Autorité: -15, confiance: -5, hierarchie: 0, cohesion: -10 },
+                    brown_horse: { Autorité: -10, confiance: -10, hierarchie: 0, cohesion: -15 },
+                    white_horse: { Autorité: -10, confiance: -5, hierarchie: 0, cohesion: -15 }
                 }
             }
         ]
@@ -556,17 +556,17 @@ const baseSituations = [
             {
                 text: "Suivre l’itinéraire des plus âgés",
                 effects: {
-                    black_horse: { Autorité: 5, confiance: 10, hierarchie: 0, cohesion: 10 },
-                    brown_horse: { Autorité: 0, confiance: 10, hierarchie: 0, cohesion: 15 },
-                    white_horse: { Autorité: 0, confiance: 10, hierarchie: 0, cohesion: 15 }
+                    black_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    brown_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 },
+                    white_horse: { Autorité: 0, confiance: 0, hierarchie: 0, cohesion: 0 }
                 }
             },
             {
                 text: "Explorer le nouveau chemin",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: -10, hierarchie: 0, cohesion: -10 },
-                    brown_horse: { Autorité: -10, confiance: -10, hierarchie: 0, cohesion: -15 },
-                    white_horse: { Autorité: -15, confiance: -10, hierarchie: 0, cohesion: -15 }
+                    black_horse: { Autorité: -15, confiance: -10, hierarchie: -15, cohesion: -10 },
+                    brown_horse: { Autorité: -10, confiance: -15, hierarchie: -10, cohesion: -15 },
+                    white_horse: { Autorité: -15, confiance: -20, hierarchie: -10, cohesion: -15 }
                 }
             }
         ]
@@ -580,9 +580,9 @@ const baseSituations = [
             {
                 text: "Ralentir pour laisser se reposer les plus atteints",
                 effects: {
-                    black_horse: { Autorité: -15, confiance: 0, hierarchie: -15, cohesion: -5 },
-                    brown_horse: { Autorité: -10, confiance: 5, hierarchie: -10, cohesion: -5 },
-                    white_horse: { Autorité: -10, confiance: 5, hierarchie: -15, cohesion: -5 }
+                    black_horse: { Autorité: -15, confiance: -15, hierarchie: -15, cohesion: -5 },
+                    brown_horse: { Autorité: -10, confiance: -10, hierarchie: -10, cohesion: -5 },
+                    white_horse: { Autorité: -10, confiance: -10, hierarchie: -15, cohesion: -5 }
                 }
             },
             {
@@ -1235,7 +1235,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
             if (horseType === "black_horse") {
                 moral = "Tu as parfois été trop directif, mais le troupeau reste uni.";
             } else if (horseType === "brown_horse") {
-                moral = "Ton empathie a permis de maintenir la cohésion, même si certaines décisions ont été difficiles.";
+                moral = " Même si certaines décisions ont été difficiles, le troupeau reste uni. ";
             } else {
                 moral = "Ta clairvoyance a permis de prévoir les situations, même si certaines décisions ont été complexes.";
             }
@@ -1255,7 +1255,7 @@ function showFinalScreen(isGameOver = false, cause = "") {
             } else if (horseType === "brown_horse") {
                 moral = "Ton empathie excessive a empêché le troupeau de prendre les décisions difficiles.";
             } else {
-                moral = "Ta clairvoyance a été obscurcie par les pressions du moment.";
+                moral = "Ton observation a été obscurcie par les pressions du moment.";
             }
         }
 
@@ -1322,19 +1322,25 @@ function showFinalScreen(isGameOver = false, cause = "") {
         } 
         gameState.currentBox = box;
         
+        // Arrêter le son de la situation précédente
+        if (gameState.currentSituationSound) {
+            gameState.currentSituationSound.stop();
+            gameState.currentSituationSound = null;
+        }
+        
         // Jouer le son approprié selon le type de situation
         switch(box.id) {
             case "danger_storm":
-                playGameSound("thunder", { volume: 0.4 });
+                gameState.currentSituationSound = playGameSound("thunder", { volume: 0.4 });
                 break;
             case "danger_predator":
-                playGameSound("wolf_howl", { volume: 0.4 });
+                gameState.currentSituationSound = playGameSound("wolf_howl", { volume: 0.4 });
                 break;
             case "conflict_food":
             case "conflict_territory":
             case "conflict_hierarchy":
             case "social_new_member":
-                playGameSound("horse_neigh", { volume: 0.4 });
+                gameState.currentSituationSound = playGameSound("horse_neigh", { volume: 0.4 });
                 break;
         }
         
@@ -1419,6 +1425,11 @@ function showFinalScreen(isGameOver = false, cause = "") {
             });
 
             button.onClick(() => {
+
+                if (gameState.currentSituationSound) {
+                    gameState.currentSituationSound.stop();
+                    gameState.currentSituationSound = null; 
+                }
                 playGameSound("click", { volume: 0.3 });
                 const horseType = gameState.selectedHorse.sprite;
                 const effects = choice.effects[horseType];
